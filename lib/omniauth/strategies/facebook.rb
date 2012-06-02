@@ -49,6 +49,7 @@ module OmniAuth
       extra do
         hash = {}
         hash['raw_info'] = raw_info unless skip_info?
+        hash['friends'] = friends
         prune! hash
       end
 
@@ -56,6 +57,10 @@ module OmniAuth
         @raw_info ||= access_token.get('/me').parsed || {}
       end
 
+      def friends
+        @friends ||= access_token.get('/me/friends').parsed['data'] || {}
+      end
+      
       def build_access_token
         if signed_request_contains_access_token?
           hash = signed_request.clone
