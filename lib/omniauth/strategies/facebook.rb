@@ -58,7 +58,15 @@ module OmniAuth
       end
 
       def friends
-        @friends ||= access_token.get('/me/friends').parsed['data'] || {}
+        if @friends.nil?
+          @friends = []
+          data = access_token.get('/me/friends').parsed
+          while data['data'].length > 0
+            @friends.concat data['data']
+            data = access_token.get(data['paging']['next']).parsed
+          end
+        end
+        @friends
       end
       
       def build_access_token
